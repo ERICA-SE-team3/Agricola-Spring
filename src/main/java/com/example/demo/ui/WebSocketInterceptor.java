@@ -26,16 +26,22 @@ public class WebSocketInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         StompCommand command = accessor.getCommand();
+        String sessionId = accessor.getSessionId();
 
         if (Objects.requireNonNull(command).equals(StompCommand.SUBSCRIBE)) {
             String destination = accessor.getDestination();
             String[] split = destination.split("/");
             String channelId = split[split.length - 1];
-            game.createRoom(channelId);
+            game.createOrJoinRoom(channelId, sessionId);
             Integer userCount = game.getUserCount(channelId);
             System.out.println(userCount);
         }
 
+        if (Objects.requireNonNull(command).equals(StompCommand.DISCONNECT)) {
+            game.checkUser(sessionId);
+            Integer userCount = game.getUserCount("1");
+            System.out.println(userCount);
+        }
 
         return message;
     }

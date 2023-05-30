@@ -1,7 +1,8 @@
 package com.example.demo.ui;
 
 import com.example.demo.application.Game;
-import com.example.demo.message.ActionMessage;
+import com.example.demo.message.ActionMessageRequest;
+import com.example.demo.message.ActionMessageResponse;
 import com.example.demo.message.CardMessage;
 import com.example.demo.message.CardsMessage;
 import com.example.demo.message.ReadyMessage;
@@ -28,7 +29,7 @@ public class GameController {
     private final Game game;
 
     @MessageMapping("/play")
-    public void message(ActionMessage message) {
+    public void message(ActionMessageRequest message) {
         logger.info("###pub start###");
         logger.info(message.toString());
         simpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), message);
@@ -42,7 +43,7 @@ public class GameController {
     }
 
     private void sendUserCountMessage(ReadyMessage message) {
-        ActionMessage userCountMessage = new ActionMessage(
+        ActionMessageResponse userCountMessage = new ActionMessageResponse(
                 "userCountCheck",
                 "server",
                 message.getChannelId(),
@@ -61,7 +62,7 @@ public class GameController {
                         facilityCardsPerUser.get(userNumber));
                 cardMessages.add(cardMessage);
             }
-            ActionMessage userCardMessage = new ActionMessage(
+            ActionMessageResponse userCardMessage = new ActionMessageResponse(
                     "cardDeck",
                     "server",
                     message.getChannelId(),

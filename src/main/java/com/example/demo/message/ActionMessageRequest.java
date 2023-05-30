@@ -12,10 +12,10 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActionMessage {
+public class ActionMessageRequest {
 
     private String type;
     private String sender;
     private String channelId;
-    private Data data;
+    private String data;
 }
