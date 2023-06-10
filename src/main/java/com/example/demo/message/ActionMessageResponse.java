@@ -17,5 +17,5 @@ public class ActionMessageResponse {
     private String type;
     private String sender;
     private String channelId;
-    private Data data;
+    private String data;
 }

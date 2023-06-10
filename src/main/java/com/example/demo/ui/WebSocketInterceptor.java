@@ -38,7 +38,7 @@ public class WebSocketInterceptor implements ChannelInterceptor {
         }
 
         if (Objects.requireNonNull(command).equals(StompCommand.DISCONNECT)) {
-            game.checkUser(sessionId);
+            game.removeUser(sessionId);
             Integer userCount = game.getUserCount("1");
             System.out.println(userCount);
         }

@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 
 public class RandomNumberGenerator {
 
-    private static final List<Integer> numbers = IntStream.rangeClosed(1,8)
+    private static final List<Integer> numbers = IntStream.rangeClosed(1, 8)
             .boxed()
             .collect(Collectors.toList());
 

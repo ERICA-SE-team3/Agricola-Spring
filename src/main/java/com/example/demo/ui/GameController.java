@@ -4,10 +4,11 @@ import com.example.demo.application.Game;
 import com.example.demo.message.ActionMessageRequest;
 import com.example.demo.message.ActionMessageResponse;
 import com.example.demo.message.CardMessage;
-import com.example.demo.message.CardsMessage;
 import com.example.demo.message.ReadyMessage;
-import com.example.demo.message.UserCountMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class GameController {
     private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
     private final SimpMessageSendingOperations simpMessageSendingOperations;
+    private final ObjectMapper objectMapper;
     private final Game game;
 
     @MessageMapping("/play")
@@ -38,35 +40,47 @@ public class GameController {
 
     @MessageMapping("/hello")
     public void ready(ReadyMessage message) {
-        sendUserCountMessage(message);
-        sendCCardMessage(message);
+        try {
+            sendUserCountMessage(message);
+            sendCardMessage(message);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException();
+        }
     }
 
-    private void sendUserCountMessage(ReadyMessage message) {
+    private void sendUserCountMessage(ReadyMessage message) throws JsonProcessingException {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("userCount", game.getUserCount(message.getChannelId()));
+        String data = objectMapper.writeValueAsString(map);
         ActionMessageResponse userCountMessage = new ActionMessageResponse(
                 "userCountCheck",
                 "server",
                 message.getChannelId(),
-                new UserCountMessage(game.getUserCount(message.getChannelId()))
+                data
         );
         simpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), userCountMessage);
     }
 
-    private void sendCCardMessage(ReadyMessage message) {
+    private void sendCardMessage(ReadyMessage message) throws JsonProcessingException {
         if (game.isFull(message.getChannelId())) {
             List<CardMessage> cardMessages = new ArrayList<>();
-            Map<Integer, List<Integer>> jobCardsPerUser = game.divideCards();
-            Map<Integer, List<Integer>> facilityCardsPerUser = game.divideCards();
+            Map<Integer, List<Integer>> jobCardsPerUser = game.divideCards(message.getChannelId());
+            Map<Integer, List<Integer>> facilityCardsPerUser = game.divideCards(message.getChannelId());
             for (Integer userNumber : jobCardsPerUser.keySet()) {
                 CardMessage cardMessage = new CardMessage(String.valueOf(userNumber), jobCardsPerUser.get(userNumber),
                         facilityCardsPerUser.get(userNumber));
                 cardMessages.add(cardMessage);
             }
+
+            Map<String, List<CardMessage>> map = new HashMap<>();
+            map.put("cards", cardMessages);
+            String data = objectMapper.writeValueAsString(map);
+
             ActionMessageResponse userCardMessage = new ActionMessageResponse(
                     "cardDeck",
                     "server",
                     message.getChannelId(),
-                    new CardsMessage(cardMessages)
+                    data
             );
             simpMessageSendingOperations.convertAndSend("/sub/channel/" + message.getChannelId(), userCardMessage);
         }
