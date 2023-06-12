@@ -18,21 +18,16 @@ import org.springframework.stereotype.Service;
 public class GameService {
 
     private final ObjectMapper objectMapper;
-    private final GameDao gameDAO;
+    private final GameDao gameDao;
 
     public void createOrJoinRoom(String channelId, String sessionId) {
-        gameDAO.save(channelId, sessionId);
-    }
-
-    public Map<Integer, List<Integer>> divideCards(String channelId) {
-        Game game = gameDAO.findByChannelId(channelId);
-        return game.divideCards();
+        gameDao.save(channelId, sessionId);
     }
 
     public ActionMessageResponse getUserCountResponse(String channelId) {
         try {
             Map<String, Integer> map = new HashMap<>();
-            int userCount = gameDAO.countByChannelId(channelId);
+            int userCount = gameDao.countByChannelId(channelId);
             map.put("userCount", userCount);
             String data = objectMapper.writeValueAsString(map);
             ActionMessageResponse response = new ActionMessageResponse(
@@ -49,13 +44,10 @@ public class GameService {
 
     public ActionMessageResponse getUserCardsResponse(String channelId) {
         try {
-            Game game = gameDAO.findByChannelId(channelId);
-            if (!game.isFull()) {
-                throw new IllegalStateException("게임 플레이어 수가 부족합니다.");
-            }
+            Game game = gameDao.findByChannelId(channelId);
             List<CardResponse> cardResponses = new ArrayList<>();
-            Map<Integer, List<Integer>> jobCardsPerUser = divideCards(channelId);
-            Map<Integer, List<Integer>> facilityCardsPerUser = divideCards(channelId);
+            Map<Integer, List<Integer>> jobCardsPerUser = game.divideCards();
+            Map<Integer, List<Integer>> facilityCardsPerUser = game.divideCards();
             for (Integer userNumber : jobCardsPerUser.keySet()) {
                 CardResponse cardResponse = new CardResponse(String.valueOf(userNumber),
                         jobCardsPerUser.get(userNumber),
@@ -80,7 +72,7 @@ public class GameService {
     }
 
     public void removeUser(String sessionId) {
-        List<Game> games = gameDAO.findAll();
+        List<Game> games = gameDao.findAll();
         for (Game game : games) {
             game.quit(sessionId);
         }
