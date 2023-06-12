@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class GameDAO {
+public class GameDao {
 
     private final Hashtable<String, Game> games = new Hashtable<>();
 
@@ -27,5 +27,9 @@ public class GameDAO {
 
     public int countByChannelId(String channelId) {
         return games.getOrDefault(channelId, new Game()).getPlayerCount();
+    }
+
+    public void clear() {
+        games.clear();
     }
 }

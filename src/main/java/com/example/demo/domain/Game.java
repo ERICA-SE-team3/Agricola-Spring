@@ -14,11 +14,10 @@ public class Game {
 
     private final Set<String> players = new HashSet<>();
 
-    public boolean isFull() {
-        return players.size() == MAX_GAME_USERS;
-    }
-
     public void join(String sessionId) {
+        if (isFull()) {
+            throw new IllegalStateException("해당 게임 룸에 참가할 수 없습니다.");
+        }
         players.add(sessionId);
     }
 
@@ -36,6 +35,10 @@ public class Game {
             cardsPerUser.put(i, cards.subList(2 * (i - 1), 2 * i));
         }
         return cardsPerUser;
+    }
+
+    public boolean isFull() {
+        return players.size() == MAX_GAME_USERS;
     }
 
     public int getPlayerCount() {

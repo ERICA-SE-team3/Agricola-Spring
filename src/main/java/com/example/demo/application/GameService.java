@@ -1,6 +1,6 @@
 package com.example.demo.application;
 
-import com.example.demo.dao.GameDAO;
+import com.example.demo.dao.GameDao;
 import com.example.demo.domain.Game;
 import com.example.demo.dto.ActionMessageResponse;
 import com.example.demo.dto.CardResponse;
@@ -18,13 +18,9 @@ import org.springframework.stereotype.Service;
 public class GameService {
 
     private final ObjectMapper objectMapper;
-    private final GameDAO gameDAO;
+    private final GameDao gameDAO;
 
     public void createOrJoinRoom(String channelId, String sessionId) {
-        Game game = gameDAO.findByChannelId(channelId);
-        if (game.isFull()) {
-            throw new IllegalStateException("해당 게임 룸에 참가할 수 없습니다.");
-        }
         gameDAO.save(channelId, sessionId);
     }
 
