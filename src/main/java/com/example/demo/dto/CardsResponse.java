@@ -1,4 +1,4 @@
-package com.example.demo.message;
+package com.example.demo.dto;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -12,9 +12,9 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CardsMessage implements Data {
+public class CardsResponse {
 
-    List<CardMessage> cards;
+    List<CardResponse> cards;
 
     @Override
     public String toString() {

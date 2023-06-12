@@ -1,6 +1,6 @@
 package com.example.demo.ui;
 
-import com.example.demo.application.Game;
+import com.example.demo.application.GameService;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class WebSocketInterceptor implements ChannelInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketInterceptor.class);
 
-    private final Game game;
+    private final GameService gameService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -32,14 +32,14 @@ public class WebSocketInterceptor implements ChannelInterceptor {
             String destination = accessor.getDestination();
             String[] split = destination.split("/");
             String channelId = split[split.length - 1];
-            game.createOrJoinRoom(channelId, sessionId);
-            Integer userCount = game.getUserCount(channelId);
+            gameService.createOrJoinRoom(channelId, sessionId);
+            Integer userCount = gameService.getUserCount(channelId);
             System.out.println(userCount);
         }
 
         if (Objects.requireNonNull(command).equals(StompCommand.DISCONNECT)) {
-            game.removeUser(sessionId);
-            Integer userCount = game.getUserCount("1");
+            gameService.removeUser(sessionId);
+            Integer userCount = gameService.getUserCount("1");
             System.out.println(userCount);
         }
 

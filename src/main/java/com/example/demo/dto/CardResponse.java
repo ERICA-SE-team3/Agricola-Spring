@@ -1,4 +1,4 @@
-package com.example.demo.message;
+package com.example.demo.dto;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CardMessage {
+public class CardResponse {
 
     private String user;
     private List<Integer> jobCards;

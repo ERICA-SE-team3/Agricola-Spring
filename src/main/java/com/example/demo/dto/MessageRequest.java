@@ -1,4 +1,4 @@
-package com.example.demo.message;
+package com.example.demo.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActionMessageRequest {
+public class MessageRequest {
 
     private String type;
     private String sender;
