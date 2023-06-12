@@ -15,11 +15,4 @@ import lombok.Setter;
 public class CardsResponse {
 
     List<CardResponse> cards;
-
-    @Override
-    public String toString() {
-        return "CardsMessage{" +
-                "cards=" + cards +
-                '}';
-    }
 }

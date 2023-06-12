@@ -1,4 +1,4 @@
-package com.example.demo.application;
+package com.example.demo.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;

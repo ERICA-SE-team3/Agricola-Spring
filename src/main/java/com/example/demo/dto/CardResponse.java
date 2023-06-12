@@ -17,13 +17,4 @@ public class CardResponse {
     private String user;
     private List<Integer> jobCards;
     private List<Integer> facilityCards;
-
-    @Override
-    public String toString() {
-        return "CardMessage{" +
-                "user='" + user + '\'' +
-                ", jobCards=" + jobCards +
-                ", facilityCards=" + facilityCards +
-                '}';
-    }
 }

@@ -33,14 +33,10 @@ public class WebSocketInterceptor implements ChannelInterceptor {
             String[] split = destination.split("/");
             String channelId = split[split.length - 1];
             gameService.createOrJoinRoom(channelId, sessionId);
-            Integer userCount = gameService.getUserCount(channelId);
-            System.out.println(userCount);
         }
 
         if (Objects.requireNonNull(command).equals(StompCommand.DISCONNECT)) {
             gameService.removeUser(sessionId);
-            Integer userCount = gameService.getUserCount("1");
-            System.out.println(userCount);
         }
 
         return message;

@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameService {
 
-    private static final int MAX_GAME_USERS = 4;
-
     private final ObjectMapper objectMapper;
     private final GameDAO gameDAO;
 
@@ -31,26 +29,8 @@ public class GameService {
     }
 
     public Map<Integer, List<Integer>> divideCards(String channelId) {
-        if (getUserCount(channelId) != MAX_GAME_USERS) {
-            throw new IllegalStateException("해당 게임 룸에는 카드를 분배할 수 없습니다.");
-        }
-        Map<Integer, List<Integer>> cardsPerUser = new HashMap<>();
-        List<Integer> cards = RandomNumberGenerator.shuffle();
-        for (int i = 1; i <= MAX_GAME_USERS; i++) {
-            cardsPerUser.put(i, cards.subList(2 * (i - 1), 2 * i));
-        }
-        return cardsPerUser;
-    }
-
-    public void removeUser(String sessionId) {
-        List<Game> games = gameDAO.findAll();
-        for (Game game : games) {
-            game.quit(sessionId);
-        }
-    }
-
-    public Integer getUserCount(String channelId) {
-        return gameDAO.countByChannelId(channelId);
+        Game game = gameDAO.findByChannelId(channelId);
+        return game.divideCards();
     }
 
     public ActionMessageResponse getUserCountResponse(String channelId) {
@@ -81,7 +61,8 @@ public class GameService {
             Map<Integer, List<Integer>> jobCardsPerUser = divideCards(channelId);
             Map<Integer, List<Integer>> facilityCardsPerUser = divideCards(channelId);
             for (Integer userNumber : jobCardsPerUser.keySet()) {
-                CardResponse cardResponse = new CardResponse(String.valueOf(userNumber), jobCardsPerUser.get(userNumber),
+                CardResponse cardResponse = new CardResponse(String.valueOf(userNumber),
+                        jobCardsPerUser.get(userNumber),
                         facilityCardsPerUser.get(userNumber));
                 cardResponses.add(cardResponse);
             }
@@ -99,6 +80,13 @@ public class GameService {
             return userCardMessage;
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Json 변환 중 예외가 발생했습니다.");
+        }
+    }
+
+    public void removeUser(String sessionId) {
+        List<Game> games = gameDAO.findAll();
+        for (Game game : games) {
+            game.quit(sessionId);
         }
     }
 }
